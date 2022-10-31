@@ -8,7 +8,7 @@ import java.util.Arrays;
  * This class will not be graded unless asked by the students
  * and only if the changes are considered as a bonus
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.3
+ * @version 1.0
  * @since 1.0
  */
 public final class Main {
@@ -40,9 +40,9 @@ public final class Main {
          */
 
         // ========== Test ArrayUtils ==========
-        assert testWrap();
-        // assert testToInt();
-        // assert testFromInt();
+        //assert testWrap();
+        assert testToInt();
+        assert testFromInt();
         // assert testConcatArrayBytes();
         // assert testConcatBytes();
         // assert testExtract();

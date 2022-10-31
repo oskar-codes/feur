@@ -66,7 +66,8 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null or the input's length is different from 4
      */
     public static int toInt(byte[] bytes){
-        return Helper.fail("Not Implemented");
+        assert bytes.length == 4 : "Invalid length of byte array";
+        return (bytes[3] + (bytes[2] << 8) + (bytes[1] << 16) + (bytes[0] << 24));
     }
 
     /**
@@ -76,7 +77,12 @@ public final class ArrayUtils {
      * @return (byte[]) - Big Endian representation of the integer
      */
     public static byte[] fromInt(int value){
-        return Helper.fail("Not Implemented");
+        return new byte[]{
+            (byte) (value >> 24), 
+            (byte) ((value << 8) >> 24),
+            (byte) ((value << 16) >> 24),
+            (byte) ((value << 24) >> 24)
+        };
     }
 
     // ==================================================================================
