@@ -98,7 +98,8 @@ public final class ArrayUtils {
    *                        different from 4
    */
   public static int toInt(byte[] bytes) {
-    return Helper.fail("Not Implemented");
+    assert bytes.length == 4 : "Invalid length of byte array";
+    return (bytes[3] + (bytes[2] << 8) + (bytes[1] << 16) + (bytes[0] << 24));
   }
 
   /**
@@ -110,7 +111,12 @@ public final class ArrayUtils {
    * @return (byte[]) - Big Endian representation of the integer
    */
   public static byte[] fromInt(int value) {
-    return Helper.fail("Not Implemented");
+    return new byte[] {
+      (byte) (value >> 24),
+      (byte) ((value << 8) >> 24),
+      (byte) ((value << 16) >> 24),
+      (byte) ((value << 24) >> 24)
+    };
   }
 
   // ==================================================================================
@@ -151,7 +157,7 @@ public final class ArrayUtils {
       assert tab != null : "One of the inner arrays is null";
       size += tab.length;
     }
-    
+
     int i = 0;
     byte[] output = new byte[size];
     for (byte[] tab : tabs) {
