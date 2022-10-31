@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * Utility class used to simulate the Unix command "diff"
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class Diff {

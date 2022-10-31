@@ -6,7 +6,7 @@ import static src.cs107.Helper.Image;
  * "Quite Ok Image" Decoder
  * @apiNote Third task of the 2022 Mini Project
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class QOIDecoder {

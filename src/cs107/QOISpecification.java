@@ -3,7 +3,7 @@ package src.cs107;
 /**
  * Utility class to describe the "Quite Ok Image" Specification
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class QOISpecification {

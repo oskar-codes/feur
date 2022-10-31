@@ -4,7 +4,7 @@ package src.cs107;
  * "Quite Ok Image" Encoder
  * @apiNote Second task of the 2022 Mini Project
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class QOIEncoder {
@@ -27,6 +27,7 @@ public final class QOIEncoder {
      */
     public static byte[] qoiHeader(Helper.Image image){
 
+      /*
       // define a QOI image format header and return it
       // the header is a byte array of 16 bytes
       // the first 4 bytes are the magic number 0x51 0x4F 0x49 0x01
@@ -76,11 +77,9 @@ public final class QOIEncoder {
       header[15] = (byte) (image.channels());
 
       return header;
-    }
-      
+      */
 
-
-        return Helper.fail("Not Implemented");
+      return Helper.fail("Not Implemented");
     }
 
     // ==================================================================================

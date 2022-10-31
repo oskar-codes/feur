@@ -4,7 +4,7 @@ package src.cs107;
  * Utility class to manipulate arrays.
  * @apiNote First Task of the 2022 Mini Project
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class ArrayUtils {
@@ -50,8 +50,7 @@ public final class ArrayUtils {
      * @return (byte[]) - array with one element (value)
      */
     public static byte[] wrap(byte value){
-        return new byte[]{value};
-        // return Helper.fail("Not Implemented");
+        return Helper.fail("Not Implemented");
     }
 
     // ==================================================================================
@@ -86,22 +85,22 @@ public final class ArrayUtils {
 
     /**
      * Concatenate a given sequence of bytes and stores them in an array
-     * @param tabs (byte ...) - Sequence of bytes to store in the array
+     * @param bytes (byte ...) - Sequence of bytes to store in the array
      * @return (byte[]) - Array representation of the sequence
      * @throws AssertionError if the input is null
      */
-    public static byte[] concat(byte ... tabs){
+    public static byte[] concat(byte ... bytes){
         return Helper.fail("Not Implemented");
     }
 
     /**
      * Concatenate a given sequence of arrays into one array
-     * @param bytes (byte[] ...) - Sequence of arrays
+     * @param tabs (byte[] ...) - Sequence of arrays
      * @return (byte[]) - Array representation of the sequence
      * @throws AssertionError if the input is null
      * or one of the inner arrays of input is null.
      */
-    public static byte[] concat(byte[] ... bytes){
+    public static byte[] concat(byte[] ... tabs){
         return Helper.fail("Not Implemented");
     }
 
