@@ -31,16 +31,13 @@ public final class ArrayUtils {
    * @throws AssertionError if one of the parameters is null
    */
   public static boolean equals(byte[] a1, byte[] a2) {
-    if (a1 == null && a2 == null)
-      return true;
+    if (a1 == null && a2 == null) return true;
     assert !(a1 == null && a2 != null
         || a1 != null && a2 == null) : "One of the arrays is null";
-    if (a1.length != a2.length)
-      return false;
+    if (a1.length != a2.length) return false;
 
     for (int i = 0; i < a1.length; i++) {
-      if (a1[i] != a2[i])
-        return false;
+      if (a1[i] != a2[i]) return false;
     }
 
     return true;
@@ -56,12 +53,13 @@ public final class ArrayUtils {
    * @throws AssertionError if one of the parameters is null
    */
   public static boolean equals(byte[][] a1, byte[][] a2) {
-    if (a1.length != a2.length)
-      return false;
+    if (a1.length != a2.length) return false;
+    if (a1 == null && a2 == null) return true;
+    assert !(a1 == null && a2 != null
+        || a1 != null && a2 == null) : "One of the arrays is null";
 
     for (int i = 0; i < a1.length; i++) {
-      if (!equals(a1[i], a2[i]))
-        return false;
+      if (!equals(a1[i], a2[i])) return false;
     }
 
     return true;
