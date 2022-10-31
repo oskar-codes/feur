@@ -26,7 +26,7 @@ public final class QOIEncoder {
      * @return (byte[]) - Corresponding "Quite Ok Image" Header
      */
     public static byte[] qoiHeader(Helper.Image image){
-
+        /*
       // define a QOI image format header and return it
       // the header is a byte array of 16 bytes
       // the first 4 bytes are the magic number 0x51 0x4F 0x49 0x01
@@ -76,9 +76,7 @@ public final class QOIEncoder {
       header[15] = (byte) (image.channels());
 
       return header;
-    }
-      
-
+      */
 
         return Helper.fail("Not Implemented");
     }
