@@ -1,2 +1,5 @@
 *.class
 bin/*
+bin/src/*
+bin/src/cs107
+bin/src/cs107/*.class
