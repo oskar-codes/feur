@@ -245,7 +245,26 @@ public final class ArrayUtils {
    *                        or one of the inner arrays of input is null
    */
   public static byte[][] imageToChannels(int[][] input) {
-    return Helper.fail("Not Implemented");
+    assert input != null : "Input is null";
+
+    int width = input.length;
+    int height = input[0].length;
+    byte[][] output = new byte[width * height][4];
+
+    int i = 0;
+    for (int[] line : input) {
+      for (int pixel : line) {
+        byte[] tab = fromInt(pixel);
+        output[i++] = new byte[]{
+          tab[1],
+          tab[2],
+          tab[3],
+          tab[0]
+        };
+      }
+    }
+
+    return output;
   }
 
   /**
@@ -264,7 +283,68 @@ public final class ArrayUtils {
    *                        or width is invalid
    */
   public static int[][] channelsToImage(byte[][] input, int height, int width) {
-    return Helper.fail("Not Implemented");
+    int[][] image = new int[height][width];
+    byte[] outputTemp = new byte[4];
+    int i = 0;
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        outputTemp[0] = input[i][3]; 
+        outputTemp[1] = input[i][0]; 
+        outputTemp[2] = input[i][1]; 
+        outputTemp[3] = input[i++][2]; 
+        image[y][x] = ArrayUtils.toInt(outputTemp);
+      }
+    }
+    return image;
+  }
+
+  /**
+   * Return a string representation of the input array
+   * @param input (byte[]) - Array to represent
+   * @return (String) - String representation of the array
+   * @throws AssertionError if the input is null
+   */
+  public static String toString(byte[] input) {
+    assert input != null : "Input is null";
+
+    String output = "";
+    for (byte b : input) {
+      output += b + " ";
+    }
+    return output;
+  }
+
+  /**
+   * Return a string representation of the input array
+   * @param input (int[]) - Array to represent
+   * @return (String) - String representation of the array
+   * @throws AssertionError if the input is null
+   */
+  public static String toString(int[] input) {
+    assert input != null : "Input is null";
+
+    String output = "";
+    for (int b : input) {
+      output += b + " ";
+    }
+    return output;
+  }
+
+  /**
+   * Recursively return a string representation of the input array
+   * @param input (int[][]) - Array to represent
+   * @return (String) - String representation of the array
+   * @throws AssertionError if the input is null
+   */
+  public static String toString(int[][] input) {
+    assert input != null : "Input is null";
+
+    String output = "";
+    for (int[] tab : input) {
+      output += toString(tab) + "\n";
+    }
+
+    return output;
   }
 
 }

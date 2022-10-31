@@ -49,7 +49,14 @@ public final class Main {
         assert testConcatBytes();
         assert testExtract();
         assert testPartition();
-        // assert testImageToChannels();
+
+        int[][] input = new int[][]{
+          {1,2,3},{4,5,6},{7,8,9}
+        };
+        System.out.println(ArrayUtils.toString(input));
+
+
+        assert testImageToChannels();
         // assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
