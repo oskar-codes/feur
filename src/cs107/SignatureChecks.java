@@ -5,7 +5,7 @@ package src.cs107;
  * @apiNote DO NOT CHANGE THE CONTENT OF THIS CLASS. IF YOU DO CHANGE IT, YOUR SUBMISSION CAN BE REFUSED BY
  * THE SERVER OR THE AUTOMATIC GRADER WILL NOT BE ABLE TO GRADE YOUR PROJECT.
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 @SuppressWarnings("unused")

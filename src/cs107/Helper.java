@@ -15,7 +15,7 @@ import java.util.Arrays;
  * Most of these methods can be implemented by the students after the
  * CS-108 course next semester.
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class Helper {

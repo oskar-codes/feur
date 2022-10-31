@@ -4,7 +4,7 @@ package src.cs107;
  * "Quite Ok Image" Encoder
  * @apiNote Second task of the 2022 Mini Project
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class QOIEncoder {
@@ -78,7 +78,7 @@ public final class QOIEncoder {
       return header;
       */
 
-        return Helper.fail("Not Implemented");
+      return Helper.fail("Not Implemented");
     }
 
     // ==================================================================================
