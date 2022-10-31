@@ -8,7 +8,7 @@ import java.util.Arrays;
  * This class will not be graded unless asked by the students
  * and only if the changes are considered as a bonus
  * @author Hamza REMMAL (hamza.remmal@epfl.ch)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class Main {
@@ -40,13 +40,15 @@ public final class Main {
          */
 
         // ========== Test ArrayUtils ==========
-        //assert testWrap();
-        assert testToInt();
-        assert testFromInt();
-        // assert testConcatArrayBytes();
-        // assert testConcatBytes();
-        // assert testExtract();
-        // assert testPartition();
+        assert testWrap();
+        assert testEquals();
+        assert testEqualsDeep();
+        // assert testToInt();
+        // assert testFromInt();
+        assert testConcatArrayBytes();
+        assert testConcatBytes();
+        assert testExtract();
+        assert testPartition();
         // assert testImageToChannels();
         // assert testChannelsToImage();
 
@@ -125,6 +127,24 @@ public final class Main {
     }
 
     @SuppressWarnings("unused")
+    private static boolean testEquals(){
+        byte[] a = new byte[]{1, 2, 3};
+        byte[] b = new byte[]{1, 2, 3};
+        byte[] c = new byte[]{1, 2, 4};
+        
+        return ArrayUtils.equals(a, b) 
+            && !ArrayUtils.equals(a, c);
+    }
+
+    private static boolean testEqualsDeep(){
+      byte[][] a = new byte[][]{{1, 2, 3}, {4, 5, 6}};
+      byte[][] b = new byte[][]{{1, 2, 3}, {4, 5, 6}};
+      byte[][] c = new byte[][]{{1, 2, 3}, {4, 5, 7}};
+      
+      return ArrayUtils.equals(a, b) && !ArrayUtils.equals(a, c);
+  }
+
+    @SuppressWarnings("unused")
     private static boolean testToInt(){
         byte[] array = {123, 8, 4, 7};
         int value = ArrayUtils.toInt(array);
@@ -147,6 +167,7 @@ public final class Main {
         byte[] tab3 = {4};
         byte[] tab = ArrayUtils.concat(tab1, tab2, tab3);
         byte[] expected = {1, 2, 3, 4};
+
         return Arrays.equals(expected, tab);
     }
 
