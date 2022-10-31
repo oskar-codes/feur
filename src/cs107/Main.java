@@ -43,8 +43,8 @@ public final class Main {
         assert testWrap();
         assert testEquals();
         assert testEqualsDeep();
-        // assert testToInt();
-        // assert testFromInt();
+        assert testToInt();
+        assert testFromInt();
         assert testConcatArrayBytes();
         assert testConcatBytes();
         assert testExtract();
