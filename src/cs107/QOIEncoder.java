@@ -25,60 +25,33 @@ public final class QOIEncoder {
      *  (See the "Quite Ok Image" Specification or the handouts of the project for more information)
      * @return (byte[]) - Corresponding "Quite Ok Image" Header
      */
-    public static byte[] qoiHeader(Helper.Image image){
-        /*
-      // define a QOI image format header and return it
-      // the header is a byte array of 16 bytes
-      // the first 4 bytes are the magic number 0x51 0x4F 0x49 0x01
-      // the next 4 bytes are the width of the image
-      // the next 4 bytes are the height of the image
-      // the next 4 bytes are the number of channels in the image
-      // ingore the colorspace
+    public static byte[] qoiHeader(Helper.Image image) {
+      assert image != null : "Input is null";
+      assert image.channels() == QOISpecification.RGB || image.channels() == QOISpecification.RGBA : "Number of channels is corrupted";
+      assert image.color_space() == QOISpecification.sRGB || image.color_space() == QOISpecification.ALL : "Color space is corrupted";
 
-      // check if the image is null
-      if (image == null) {
-        throw new AssertionError("Image is null");
-      }
+      byte[] header = new byte[14];
+      header[0] = 'q';
+      header[1] = 'o';
+      header[2] = 'i';
+      header[3] = 'f';
 
-      // check if the number of channels is corrupted
-      if (image.channels() < 1 || image.channels() > 4) {
-        throw new AssertionError("Number of channels is corrupted");
-      }
+      int width = image.data()[0].length;
+      header[4] = (byte) (width >> 24);
+      header[5] = (byte) (width >> 16);
+      header[6] = (byte) (width >> 8);
+      header[7] = (byte) (width);
 
-      // check if the color space is corrupted
-      if (image.color_space() != 0) {
-        throw new AssertionError("Color space is corrupted");
-      }
+      int height = image.data().length;
+      header[8] = (byte) (height >> 24);
+      header[9] = (byte) (height >> 16);
+      header[10] = (byte) (height >> 8);
+      header[11] = (byte) (height);
 
-      // create the header
-      byte[] header = new byte[16];
-      header[0] = 0x51;
-      header[1] = 0x4F;
-      header[2] = 0x49;
-      header[3] = 0x01;
-
-      // width
-      header[4] = (byte) (image.width >> 24);
-      header[5] = (byte) (image.width >> 16);
-      header[6] = (byte) (image.width >> 8);
-      header[7] = (byte) (image.width);
-
-      // height
-      header[8] = (byte) (image.height >> 24);
-      header[9] = (byte) (image.height >> 16);
-      header[10] = (byte) (image.height >> 8);
-      header[11] = (byte) (image.height);
-
-      // channels
-      header[12] = (byte) (image.channels() >> 24);
-      header[13] = (byte) (image.channels() >> 16);
-      header[14] = (byte) (image.channels() >> 8);
-      header[15] = (byte) (image.channels());
+      header[12] = image.channels();
+      header[13] = image.color_space();
 
       return header;
-      */
-
-      return Helper.fail("Not Implemented");
     }
 
     // ==================================================================================
@@ -101,8 +74,12 @@ public final class QOIEncoder {
      * @throws AssertionError if the pixel's length is not 4
      * @return (byte[]) Encoding of the pixel using the QOI_OP_RGBA schema
      */
-    public static byte[] qoiOpRGBA(byte[] pixel){
-        return Helper.fail("Not Implemented");
+    public static byte[] qoiOpRGBA(byte[] pixel) {
+      assert pixel.length == 4 : "Invalid pixel length";
+      return ArrayUtils.concat(
+        ArrayUtils.wrap(QOISpecification.QOI_OP_RGBA_TAG),
+        pixel
+      );
     }
 
     /**
@@ -112,7 +89,8 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the index using the QOI_OP_INDEX schema
      */
     public static byte[] qoiOpIndex(byte index){
-        return Helper.fail("Not Implemented");
+      assert index < 64 : "Invalid index";
+      return ArrayUtils.wrap((byte) (QOISpecification.QOI_OP_INDEX_TAG | index));
     }
 
     /**
@@ -134,8 +112,24 @@ public final class QOIEncoder {
      * (See the handout for the constraints)
      * @return (byte[]) - Encoding of the given difference
      */
-    public static byte[] qoiOpLuma(byte[] diff){
-        return Helper.fail("Not Implemented");
+    public static byte[] qoiOpLuma(byte[] diff) {
+      assert diff.length == 3;
+      assert diff[1] > -33 && diff[1] < 32 : "Invalid DG value";
+
+      assert diff[2] > -33 && diff[2] < 32 : "Invalid DB value";
+
+      byte drdg = (byte) (diff[0] - diff[1]);
+      assert drdg > -9 && drdg < 8 : "Invalid DR-DG value";
+
+      byte dbdg = (byte) (diff[2] - diff[1]);
+      assert dbdg > -9 && dbdg < 8 : "Invalid DB-DG value";
+
+      
+      byte[] encoded = new byte[2];
+      encoded[0] = (byte) (QOISpecification.QOI_OP_LUMA_TAG | (diff[1] + 32));
+      encoded[1] = (byte) (((drdg + 8) << 4) + (dbdg + 8));
+
+      return encoded;
     }
 
     /**

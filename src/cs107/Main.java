@@ -49,23 +49,16 @@ public final class Main {
         assert testConcatBytes();
         assert testExtract();
         assert testPartition();
-
-        int[][] input = new int[][]{
-          {1,2,3},{4,5,6},{7,8,9}
-        };
-        System.out.println(ArrayUtils.toString(input));
-
-
         assert testImageToChannels();
-        // assert testChannelsToImage();
+        assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        // assert testQoiHeader();
+        assert testQoiHeader();
         // assert testQoiOpRGB();
-        // assert testQoiOpRGBA();
-        // assert testQoiOpIndex();
+        assert testQoiOpRGBA();
+        assert testQoiOpIndex();
         // assert testQoiOpDiff();
-        // assert testQoiOpLuma();
+        assert testQoiOpLuma();
         // assert testQoiOpRun();
         // assert testEncodeData();
 
@@ -218,13 +211,13 @@ public final class Main {
 
 
     @SuppressWarnings("unused")
-    private static boolean testImageToChannels(){
+    private static boolean testImageToChannels() {
         byte[][] output = ArrayUtils.imageToChannels(input);
         return Arrays.deepEquals(output, formattedInput);
     }
 
     @SuppressWarnings("unused")
-    private static boolean testChannelsToImage(){
+    private static boolean testChannelsToImage() {
         int[][]  output = ArrayUtils.channelsToImage(formattedInput, 3, 5);
         return Arrays.deepEquals(output, input);
     }
@@ -234,7 +227,7 @@ public final class Main {
     // ============================================================================================
 
     @SuppressWarnings("unused")
-    private static boolean testQoiHeader(){
+    private static boolean testQoiHeader() {
         Helper.Image image = Helper.generateImage(new int[32][64], QOISpecification.RGB, QOISpecification.sRGB);
         byte[] expected = {113, 111, 105, 102, 0, 0, 0, 64, 0, 0, 0, 32, 3, 0};
         byte[] header = QOIEncoder.qoiHeader(image);
@@ -242,7 +235,7 @@ public final class Main {
     }
 
     @SuppressWarnings("unused")
-    private static boolean testQoiOpRGB(){
+    private static boolean testQoiOpRGB() {
         byte[] pixel = {100, 0, 55, 0};
         byte[] expected = {-2, 100, 0, 55};
         byte[] encoding = QOIEncoder.qoiOpRGB(pixel);
@@ -250,7 +243,7 @@ public final class Main {
     }
 
     @SuppressWarnings("unused")
-    private static boolean testQoiOpRGBA(){
+    private static boolean testQoiOpRGBA() {
         byte[] pixel = {100, 0, 55, 73};
         byte[] expected = {-1, 100, 0, 55, 73};
         byte[] encoding = QOIEncoder.qoiOpRGBA(pixel);
@@ -258,7 +251,7 @@ public final class Main {
     }
 
     @SuppressWarnings("unused")
-    private static boolean testQoiOpIndex(){
+    private static boolean testQoiOpIndex() {
         byte index = 43;
         byte[] expected = {43};
         byte[] encoding = QOIEncoder.qoiOpIndex(index);
@@ -266,7 +259,7 @@ public final class Main {
     }
 
     @SuppressWarnings("unused")
-    private static boolean testQoiOpDiff(){
+    private static boolean testQoiOpDiff() {
         byte[] diff = {-2, -1, 0};
         byte[] expected = {70};
         byte[] encoding = QOIEncoder.qoiOpDiff(diff);
@@ -274,10 +267,11 @@ public final class Main {
     }
 
     @SuppressWarnings("unused")
-    private static boolean testQoiOpLuma(){
+    private static boolean testQoiOpLuma() {
         byte[] diff = {19, 27, 20};
         byte[] expected = {-69, 1};
         byte[] encoding = QOIEncoder.qoiOpLuma(diff);
+
         return Arrays.equals(expected, encoding);
     }
 
