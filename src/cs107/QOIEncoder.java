@@ -92,7 +92,12 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the pixel using the QOI_OP_RGB schema
      */
     public static byte[] qoiOpRGB(byte[] pixel){
-        return Helper.fail("Not Implemented");
+        assert pixel.length == 4: "Invalid pixel length";
+        for (int i = 3; i > 0; i--) {
+            pixel[i] = pixel[i-1];
+        }
+        pixel[0] = QOISpecification.QOI_OP_RGB_TAG;
+        return pixel;
     }
 
     /**
@@ -123,7 +128,15 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpDiff(byte[] diff){
-        return Helper.fail("Not Implemented");
+        assert diff != null : "Diff cannot be null";
+        assert diff.length == 3 : "Diff length must be 3";
+        byte[] encoding = new byte[1];
+        for (int i = 0; i < diff.length; i++) {
+            assert diff[i] < 2 && diff[i] > -3;
+            encoding[0] += (diff[2-i] + 2) << (2 * i);
+        }
+        encoding[0] += QOISpecification.QOI_OP_DIFF_TAG;
+        return encoding; 
     }
 
     /**
@@ -145,7 +158,9 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of count
      */
     public static byte[] qoiOpRun(byte count){
-        return Helper.fail("Not Implemented");
+        assert count < 63 && count > 0 : "Invalid count length";
+        count += QOISpecification.QOI_OP_RUN_TAG - 1;
+        return ArrayUtils.wrap(count);
     }
 
     // ==================================================================================
