@@ -1,4 +1,5 @@
 package src.cs107;
+import java.util.ArrayList;
 
 /**
  * "Quite Ok Image" Encoder
@@ -168,7 +169,89 @@ public final class QOIEncoder {
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
     public static byte[] encodeData(byte[][] image){
+        byte[] previousPixel = QOISpecification.START_PIXEL;
+        byte[][] hashTable = new byte[64][4];
+        byte compteur = 0;
+
+        ArrayList<byte[]> compressedImage = new ArrayList<byte[]>();
+        boolean red = false;
+        boolean green = false;
+        boolean blue = false;
+        boolean alpha = false;
+        
+        for (int i = 0; i < image.length; i++) {
+          byte[] pixel = image[i];
+
+          if (ArrayUtils.equals(pixel, previousPixel)) { 
+            compteur += 1;
+            if (compteur > 62) { 
+              compteur = 0;
+              compressedImage.add(qoiOpRun(compteur));
+            }
+            previousPixel = pixel;
+            continue;
+          } 
+          
+          if (compteur > 0) {
+            compressedImage.add(qoiOpRun(compteur));
+            previousPixel = pixel;
+            continue;
+          }
+
+          byte hash = QOISpecification.hash(pixel);
+          byte[] reference = hashTable[hash];
+
+          if (ArrayUtils.equals(reference, pixel)) {
+            compressedImage.add(qoiOpIndex(hash));
+            previousPixel = pixel;
+            continue;
+          }
+
+          hashTable[hash] = pixel;
+          
+          if (pixel[3] != previousPixel[3]) {
+            compressedImage.add(qoiOpRGBA(pixel));
+            previousPixel = pixel;
+            continue;
+          }
+
+          byte dr = (byte) (previousPixel[0] - pixel[0]);
+          byte dg = (byte) (previousPixel[1] - pixel[1]);
+          byte db = (byte) (previousPixel[2] - pixel[2]);
+
+          if (ArrayUtils.inRange(-3,2, dr)
+          &&  ArrayUtils.inRange(-3, 2, dg)
+          &&  ArrayUtils.inRange(-3, 2, db)) {
+            compressedImage.add(qoiOpDiff(new byte[]{dr, dg, db}));
+            previousPixel = pixel;
+            continue;
+          }
+
+          byte drdg = (byte) (dr - dg);
+          byte dbdg = (byte) (db - dg);
+          if (ArrayUtils.inRange(-33,32, dg)
+          &&  ArrayUtils.inRange(-9, 8, drdg)
+          &&  ArrayUtils.inRange(-9, 8, dbdg)) {
+            compressedImage.add(qoiOpLuma(new byte[]{dr, dg, db}));
+            previousPixel = pixel;
+            continue;
+          }
+          
+          compressedImage.add(qoiOpRGB(pixel));
+          previousPixel = pixel;       
+        }
+
         return Helper.fail("Not Implemented");
+
+        // byte[] result = new byte[compressedImage.size()];
+        // for (int i = 0; i < compressedImage.size(); i++) {
+        //   for (int j = 0; j < compressedImage[i].length; j++) {
+        //     result[i+j] = compressedImage[i][j];
+        //   }
+        // }
+
+        // return result;
+
     }
 
     /**
