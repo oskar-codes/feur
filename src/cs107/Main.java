@@ -60,7 +60,7 @@ public final class Main {
         assert testQoiOpDiff();
         assert testQoiOpLuma();
         assert testQoiOpRun();
-        // assert testEncodeData();
+        assert testEncodeData();
 
         // ========== Test QOIDecoder ==========
         // assert testDecodeHeader();
@@ -288,6 +288,23 @@ public final class Main {
         byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
         byte[] expected = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[] encoding = QOIEncoder.encodeData(pixels);
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
+        System.out.println("### EXPECTED ###");
+        System.out.println(ArrayUtils.toString(expected));
+        
+        System.out.println();
+        
+        System.out.println("### OUTPUTED ###");
+        System.out.println(ArrayUtils.toString(encoding));
+        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         return Arrays.equals(expected, encoding);
     }
 

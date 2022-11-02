@@ -174,14 +174,9 @@ public final class QOIEncoder {
         byte compteur = 0;
 
         ArrayList<byte[]> compressedImage = new ArrayList<byte[]>();
-        boolean red = false;
-        boolean green = false;
-        boolean blue = false;
-        boolean alpha = false;
         
         for (int i = 0; i < image.length; i++) {
           byte[] pixel = image[i];
-
           if (ArrayUtils.equals(pixel, previousPixel)) { 
             compteur += 1;
             if (compteur > 62) { 
@@ -194,6 +189,7 @@ public final class QOIEncoder {
           
           if (compteur > 0) {
             compressedImage.add(qoiOpRun(compteur));
+            compteur = 0;
             previousPixel = pixel;
             continue;
           }
@@ -241,16 +237,20 @@ public final class QOIEncoder {
           previousPixel = pixel;       
         }
 
-        return Helper.fail("Not Implemented");
+        int size = 0;
+        for (int i = 0; i < compressedImage.size(); i++) {
+          size += compressedImage.get(i).length;
+        }
 
-        // byte[] result = new byte[compressedImage.size()];
-        // for (int i = 0; i < compressedImage.size(); i++) {
-        //   for (int j = 0; j < compressedImage[i].length; j++) {
-        //     result[i+j] = compressedImage[i][j];
-        //   }
-        // }
+        byte[] result = new byte[size];
+        int k = 0;
+        for (int i = 0; i < compressedImage.size(); i++) {
+          for (int j = 0; j < compressedImage.get(i).length; j++) {
+            result[k++] = compressedImage.get(i)[j];
+          }
+        }
 
-        // return result;
+        return result;
 
     }
 
