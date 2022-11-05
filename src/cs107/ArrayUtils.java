@@ -52,6 +52,7 @@ public final class ArrayUtils {
    *         false otherwise
    * @throws AssertionError if one of the parameters is null
    */
+  @SuppressWarnings("all")
   public static boolean equals(byte[][] a1, byte[][] a2) {
     if (a1.length != a2.length) return false;
     if (a1 == null && a2 == null) return true;

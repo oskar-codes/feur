@@ -62,12 +62,6 @@ public final class Main {
         assert testQoiOpRun();
         assert testEncodeData();
 
-        // System.out.println(QOISpecification.hash(new byte[]{(byte)41, (byte)41, (byte)194, (byte)241}));
-        
-        // testEncodeData2();
-
-        // System.out.println(QOISpecification.hash(new byte[]{ 127, 127, 127, 127 }));
-
         // String name = "dice";
 
         // Helper.write(name + ".qoi",
@@ -79,7 +73,7 @@ public final class Main {
         // Diff.diff("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi", "D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".qoi");
 
         // ========== Test QOIDecoder ==========
-        // assert testDecodeHeader();
+        assert testDecodeHeader();
         // assert testDecodeQoiOpRGB();
         // assert testDecodeQoiOpRGBA();
         // assert testDecodeQoiOpDiff();
@@ -323,24 +317,6 @@ public final class Main {
         // System.out.println();
         
         return Arrays.equals(expected, encoding);
-    }
-
-    private static void testEncodeData2() {
-        byte[][]  pixels = {
-          { (byte) 255, (byte) 0, (byte) 0, (byte) 255 },
-          { (byte) 240, (byte) 19, (byte) 19, (byte) 255 },
-          { (byte) 230, (byte) 30, (byte) 30, (byte) 255 },
-          { (byte) 220, (byte) 40, (byte) 40, (byte) 255 },
-          { (byte) 210, (byte) 50, (byte) 50, (byte) 255 },
-          { (byte) 0, (byte) 0, (byte) 255, (byte) 255 },
-          { (byte) 0, (byte) 0, (byte) 253, (byte) 255 },
-          { (byte) 0, (byte) 0, (byte) 251, (byte) 255 },
-          { (byte) 0, (byte) 0, (byte) 100, (byte) 255 },
-          { (byte) 0, (byte) 0, (byte) 60, (byte) 255 }
-        };
-        byte[] encoding = QOIEncoder.encodeData(pixels);
-
-        System.out.println(ArrayUtils.toString(encoding));
     }
 
     // ============================================================================================
