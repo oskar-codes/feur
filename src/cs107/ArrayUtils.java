@@ -360,6 +360,23 @@ public final class ArrayUtils {
    * @return (boolean) - Result
    */
   public static boolean inRange(int min, int max, byte val) {
-    return (val > min && val < max);
+    return ((int)val > min && (int)val < max);
+  }
+
+  /**
+   * Returns a copy of the given array of length 4
+   * @param input (byte[]) - Array to copy
+   * @return (byte[]) - Copy of the array
+   * @throws AssertionError if the input is null or the input's length is different from 4
+   */
+  public static byte[] copy(byte[] input) {
+    assert input != null : "Input is null";
+    assert input.length == 4 : "Input's length is different from 4";
+
+    byte[] output = new byte[4];
+    for (int i = 0; i < 4; i++) {
+      output[i] = input[i];
+    }
+    return output;
   }
 }

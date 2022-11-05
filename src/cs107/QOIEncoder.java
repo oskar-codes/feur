@@ -67,11 +67,7 @@ public final class QOIEncoder {
      */
     public static byte[] qoiOpRGB(byte[] pixel){
         assert pixel.length == 4: "Invalid pixel length";
-        for (int i = 3; i > 0; i--) {
-            pixel[i] = pixel[i-1];
-        }
-        pixel[0] = QOISpecification.QOI_OP_RGB_TAG;
-        return pixel;
+        return new byte[]{QOISpecification.QOI_OP_RGB_TAG, pixel[0], pixel[1], pixel[2]};
     }
 
     /**
@@ -82,10 +78,7 @@ public final class QOIEncoder {
      */
     public static byte[] qoiOpRGBA(byte[] pixel) {
       assert pixel.length == 4 : "Invalid pixel length";
-      return ArrayUtils.concat(
-        ArrayUtils.wrap(QOISpecification.QOI_OP_RGBA_TAG),
-        pixel
-      );
+      return new byte[]{QOISpecification.QOI_OP_RGBA_TAG, pixel[0], pixel[1], pixel[2], pixel[3]};
     }
 
     /**
@@ -95,8 +88,8 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the index using the QOI_OP_INDEX schema
      */
     public static byte[] qoiOpIndex(byte index){
-      assert index < 64 : "Invalid index";
-      return ArrayUtils.wrap((byte) (QOISpecification.QOI_OP_INDEX_TAG | index));
+      assert index >= 0 && index < 64 : "Invalid index";
+      return ArrayUtils.wrap(index);
     }
 
     /**
@@ -107,15 +100,15 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpDiff(byte[] diff){
-        assert diff != null : "Diff cannot be null";
-        assert diff.length == 3 : "Diff length must be 3";
-        byte[] encoding = new byte[1];
-        for (int i = 0; i < diff.length; i++) {
-            assert diff[i] < 2 && diff[i] > -3;
-            encoding[0] += (diff[2-i] + 2) << (2 * i);
-        }
-        encoding[0] += QOISpecification.QOI_OP_DIFF_TAG;
-        return encoding; 
+      assert diff != null : "Diff cannot be null";
+      assert diff.length == 3 : "Diff length must be 3";
+      byte[] encoding = new byte[1];
+      for (int i = 0; i < diff.length; i++) {
+        assert diff[i] < 2 && diff[i] > -3;
+        encoding[0] += (diff[2-i] + 2) << (2 * i);
+      }
+      encoding[0] += QOISpecification.QOI_OP_DIFF_TAG;
+      return encoding;
     }
 
     /**
@@ -129,8 +122,6 @@ public final class QOIEncoder {
     public static byte[] qoiOpLuma(byte[] diff) {
       assert diff.length == 3;
       assert diff[1] > -33 && diff[1] < 32 : "Invalid DG value";
-
-      assert diff[2] > -33 && diff[2] < 32 : "Invalid DB value";
 
       byte drdg = (byte) (diff[0] - diff[1]);
       assert drdg > -9 && drdg < 8 : "Invalid DR-DG value";
@@ -153,9 +144,9 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of count
      */
     public static byte[] qoiOpRun(byte count){
-        assert count < 63 && count > 0 : "Invalid count length";
-        count += QOISpecification.QOI_OP_RUN_TAG - 1;
-        return ArrayUtils.wrap(count);
+        // System.out.println(count);
+        assert count > 0 && count < 63 : "Invalid count length";
+        return ArrayUtils.wrap((byte) (count + QOISpecification.QOI_OP_RUN_TAG - 1));
     }
 
     // ==================================================================================
@@ -177,49 +168,46 @@ public final class QOIEncoder {
         
         for (int i = 0; i < image.length; i++) {
           byte[] pixel = image[i];
-          if (ArrayUtils.equals(pixel, previousPixel)) { 
+          if (ArrayUtils.equals(pixel, previousPixel)) {
             compteur += 1;
-            if (compteur > 62) { 
-              compteur = 0;
+            if (compteur >= 62) {
               compressedImage.add(qoiOpRun(compteur));
+              compteur = 0;
             }
-            previousPixel = pixel;
+            previousPixel = ArrayUtils.copy(pixel);
             continue;
           } 
           
           if (compteur > 0) {
             compressedImage.add(qoiOpRun(compteur));
             compteur = 0;
-            previousPixel = pixel;
-            continue;
           }
 
           byte hash = QOISpecification.hash(pixel);
           byte[] reference = hashTable[hash];
 
-          if (ArrayUtils.equals(reference, pixel)) {
+          if (ArrayUtils.equals(reference, pixel) && (!reference.equals(new byte[]{0, 0, 0, 0}) || hash != 0)) {
             compressedImage.add(qoiOpIndex(hash));
-            previousPixel = pixel;
+            previousPixel = ArrayUtils.copy(pixel);
             continue;
           }
-
-          hashTable[hash] = pixel;
+          hashTable[hash] = ArrayUtils.copy(pixel);
           
           if (pixel[3] != previousPixel[3]) {
             compressedImage.add(qoiOpRGBA(pixel));
-            previousPixel = pixel;
+            previousPixel = ArrayUtils.copy(pixel);
             continue;
           }
 
-          byte dr = (byte) (previousPixel[0] - pixel[0]);
-          byte dg = (byte) (previousPixel[1] - pixel[1]);
-          byte db = (byte) (previousPixel[2] - pixel[2]);
+          byte dr = (byte) (pixel[0] - previousPixel[0]);
+          byte dg = (byte) (pixel[1] - previousPixel[1]);
+          byte db = (byte) (pixel[2] - previousPixel[2]);
 
           if (ArrayUtils.inRange(-3,2, dr)
           &&  ArrayUtils.inRange(-3, 2, dg)
           &&  ArrayUtils.inRange(-3, 2, db)) {
             compressedImage.add(qoiOpDiff(new byte[]{dr, dg, db}));
-            previousPixel = pixel;
+            previousPixel = ArrayUtils.copy(pixel);
             continue;
           }
 
@@ -229,12 +217,15 @@ public final class QOIEncoder {
           &&  ArrayUtils.inRange(-9, 8, drdg)
           &&  ArrayUtils.inRange(-9, 8, dbdg)) {
             compressedImage.add(qoiOpLuma(new byte[]{dr, dg, db}));
-            previousPixel = pixel;
+            previousPixel = ArrayUtils.copy(pixel);
             continue;
           }
           
           compressedImage.add(qoiOpRGB(pixel));
-          previousPixel = pixel;       
+          previousPixel = ArrayUtils.copy(pixel);
+        }
+        if (compteur > 0) {
+          compressedImage.add(qoiOpRun(compteur));
         }
 
         int size = 0;
@@ -263,7 +254,14 @@ public final class QOIEncoder {
      * @throws AssertionError if the image is null
      */
     public static byte[] qoiFile(Helper.Image image){
-        return Helper.fail("Not Implemented");
+      assert image != null : "Image is null";
+      byte[] header = qoiHeader(image);
+
+      byte[][] data = ArrayUtils.imageToChannels(image.data());
+
+      byte[] encodedData = encodeData(data);
+      byte[] EOF = QOISpecification.QOI_EOF;
+      return ArrayUtils.concat(header, encodedData, EOF);
     }
 
 }

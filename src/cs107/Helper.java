@@ -51,8 +51,7 @@ public final class Helper {
         public boolean equals(Object obj) {
             if (obj instanceof Image im){
                 return Arrays.deepEquals(data, im.data) && (channels == im.channels) && (color_space == im.color_space);
-            }else
-                return false;
+            } else return false;
         }
 
         @Override

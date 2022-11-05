@@ -62,6 +62,22 @@ public final class Main {
         assert testQoiOpRun();
         assert testEncodeData();
 
+        // System.out.println(QOISpecification.hash(new byte[]{(byte)41, (byte)41, (byte)194, (byte)241}));
+        
+        // testEncodeData2();
+
+        // System.out.println(QOISpecification.hash(new byte[]{ 127, 127, 127, 127 }));
+
+        // String name = "dice";
+
+        // Helper.write(name + ".qoi",
+        //   QOIEncoder.qoiFile(
+        //     Helper.readImage("D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".png")
+        //   )
+        // );
+
+        // Diff.diff("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi", "D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".qoi");
+
         // ========== Test QOIDecoder ==========
         // assert testDecodeHeader();
         // assert testDecodeQoiOpRGB();
@@ -269,6 +285,7 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testQoiOpLuma() {
         byte[] diff = {19, 27, 20};
+        // byte[] diff = {0,-1,0,-1};
         byte[] expected = {-69, 1};
         byte[] encoding = QOIEncoder.qoiOpLuma(diff);
 
@@ -289,23 +306,41 @@ public final class Main {
         byte[] expected = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[] encoding = QOIEncoder.encodeData(pixels);
 
-        System.out.println();
-        System.out.println();
-        System.out.println();
+        // System.out.println();
+        // System.out.println();
+        // System.out.println();
         
-        System.out.println("### EXPECTED ###");
-        System.out.println(ArrayUtils.toString(expected));
+        // System.out.println("### EXPECTED ###");
+        // System.out.println(ArrayUtils.toString(expected));
         
-        System.out.println();
+        // System.out.println();
         
-        System.out.println("### OUTPUTED ###");
-        System.out.println(ArrayUtils.toString(encoding));
+        // System.out.println("### OUTPUTED ###");
+        // System.out.println(ArrayUtils.toString(encoding));
         
-        System.out.println();
-        System.out.println();
-        System.out.println();
+        // System.out.println();
+        // System.out.println();
+        // System.out.println();
         
         return Arrays.equals(expected, encoding);
+    }
+
+    private static void testEncodeData2() {
+        byte[][]  pixels = {
+          { (byte) 255, (byte) 0, (byte) 0, (byte) 255 },
+          { (byte) 240, (byte) 19, (byte) 19, (byte) 255 },
+          { (byte) 230, (byte) 30, (byte) 30, (byte) 255 },
+          { (byte) 220, (byte) 40, (byte) 40, (byte) 255 },
+          { (byte) 210, (byte) 50, (byte) 50, (byte) 255 },
+          { (byte) 0, (byte) 0, (byte) 255, (byte) 255 },
+          { (byte) 0, (byte) 0, (byte) 253, (byte) 255 },
+          { (byte) 0, (byte) 0, (byte) 251, (byte) 255 },
+          { (byte) 0, (byte) 0, (byte) 100, (byte) 255 },
+          { (byte) 0, (byte) 0, (byte) 60, (byte) 255 }
+        };
+        byte[] encoding = QOIEncoder.encodeData(pixels);
+
+        System.out.println(ArrayUtils.toString(encoding));
     }
 
     // ============================================================================================
