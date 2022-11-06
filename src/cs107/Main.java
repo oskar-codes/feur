@@ -74,10 +74,10 @@ public final class Main {
 
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
-        // assert testDecodeQoiOpRGB();
+        assert testDecodeQoiOpRGB();
         // assert testDecodeQoiOpRGBA();
-        // assert testDecodeQoiOpDiff();
-        // assert testDecodeQoiOpLuma();
+        assert testDecodeQoiOpDiff();
+        assert testDecodeQoiOpLuma();
         // assert testDecodeQoiOpRun();
         // assert testDecodeData();
 
