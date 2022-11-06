@@ -65,9 +65,9 @@ public final class QOIEncoder {
      * @throws AssertionError if the pixel's length is not 4
      * @return (byte[]) - Encoding of the pixel using the QOI_OP_RGB schema
      */
-    public static byte[] qoiOpRGB(byte[] pixel){
-        assert pixel.length == 4: "Invalid pixel length";
-        return new byte[]{QOISpecification.QOI_OP_RGB_TAG, pixel[0], pixel[1], pixel[2]};
+    public static byte[] qoiOpRGB(byte[] pixel) {
+      assert pixel.length == 4: "Invalid pixel length";
+      return new byte[]{QOISpecification.QOI_OP_RGB_TAG, pixel[0], pixel[1], pixel[2]};
     }
 
     /**
@@ -87,7 +87,7 @@ public final class QOIEncoder {
      * @throws AssertionError if the index is outside the range of all possible indices
      * @return (byte[]) - Encoding of the index using the QOI_OP_INDEX schema
      */
-    public static byte[] qoiOpIndex(byte index){
+    public static byte[] qoiOpIndex(byte index) {
       assert index >= 0 && index < 64 : "Invalid index";
       return ArrayUtils.wrap(index);
     }
@@ -99,7 +99,7 @@ public final class QOIEncoder {
      * (See the handout for the constraints)
      * @return (byte[]) - Encoding of the given difference
      */
-    public static byte[] qoiOpDiff(byte[] diff){
+    public static byte[] qoiOpDiff(byte[] diff) {
       assert diff != null : "Diff cannot be null";
       assert diff.length == 3 : "Diff length must be 3";
       byte[] encoding = new byte[1];
@@ -143,10 +143,9 @@ public final class QOIEncoder {
      * @throws AssertionError if count is not between 0 (exclusive) and 63 (exclusive)
      * @return (byte[]) - Encoding of count
      */
-    public static byte[] qoiOpRun(byte count){
-        // System.out.println(count);
-        assert count > 0 && count < 63 : "Invalid count length";
-        return ArrayUtils.wrap((byte) (count + QOISpecification.QOI_OP_RUN_TAG - 1));
+    public static byte[] qoiOpRun(byte count) {
+      assert count > 0 && count < 63 : "Invalid count length";
+      return ArrayUtils.wrap((byte) (count + QOISpecification.QOI_OP_RUN_TAG - 1));
     }
 
     // ==================================================================================
@@ -159,90 +158,94 @@ public final class QOIEncoder {
      * @param image (byte[][]) - Formatted image to encode
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
-    public static byte[] encodeData(byte[][] image){
-        byte[] previousPixel = QOISpecification.START_PIXEL;
-        byte[][] hashTable = new byte[64][4];
-        byte compteur = 0;
+    public static byte[] encodeData(byte[][] image) {
+      byte[] previousPixel = QOISpecification.START_PIXEL;
+      byte[][] hashTable = new byte[64][4];
+      byte compteur = 0;
 
-        ArrayList<byte[]> compressedImage = new ArrayList<byte[]>();
-        
-        for (int i = 0; i < image.length; i++) {
-          byte[] pixel = image[i];
-          if (ArrayUtils.equals(pixel, previousPixel)) {
-            compteur += 1;
-            if (compteur >= 62) {
-              compressedImage.add(qoiOpRun(compteur));
-              compteur = 0;
-            }
-            previousPixel = ArrayUtils.copy(pixel);
-            continue;
-          } 
-          
-          if (compteur > 0) {
+      ArrayList<byte[]> compressedImage = new ArrayList<byte[]>();
+      
+      for (int i = 0; i < image.length; i++) {
+        byte[] pixel = image[i];
+
+        // QOI_OP_RUN
+        if (ArrayUtils.equals(pixel, previousPixel)) {
+          compteur += 1;
+          if (compteur >= 62) {
             compressedImage.add(qoiOpRun(compteur));
             compteur = 0;
           }
-
-          byte hash = QOISpecification.hash(pixel);
-          byte[] reference = hashTable[hash];
-
-          if (ArrayUtils.equals(reference, pixel) && (!reference.equals(new byte[]{0, 0, 0, 0}) || hash != 0)) {
-            compressedImage.add(qoiOpIndex(hash));
-            previousPixel = ArrayUtils.copy(pixel);
-            continue;
-          }
-          hashTable[hash] = ArrayUtils.copy(pixel);
-          
-          if (pixel[3] != previousPixel[3]) {
-            compressedImage.add(qoiOpRGBA(pixel));
-            previousPixel = ArrayUtils.copy(pixel);
-            continue;
-          }
-
-          byte dr = (byte) (pixel[0] - previousPixel[0]);
-          byte dg = (byte) (pixel[1] - previousPixel[1]);
-          byte db = (byte) (pixel[2] - previousPixel[2]);
-
-          if (ArrayUtils.inRange(-3,2, dr)
-          &&  ArrayUtils.inRange(-3, 2, dg)
-          &&  ArrayUtils.inRange(-3, 2, db)) {
-            compressedImage.add(qoiOpDiff(new byte[]{dr, dg, db}));
-            previousPixel = ArrayUtils.copy(pixel);
-            continue;
-          }
-
-          byte drdg = (byte) (dr - dg);
-          byte dbdg = (byte) (db - dg);
-          if (ArrayUtils.inRange(-33,32, dg)
-          &&  ArrayUtils.inRange(-9, 8, drdg)
-          &&  ArrayUtils.inRange(-9, 8, dbdg)) {
-            compressedImage.add(qoiOpLuma(new byte[]{dr, dg, db}));
-            previousPixel = ArrayUtils.copy(pixel);
-            continue;
-          }
-          
-          compressedImage.add(qoiOpRGB(pixel));
           previousPixel = ArrayUtils.copy(pixel);
+          continue;
         }
         if (compteur > 0) {
           compressedImage.add(qoiOpRun(compteur));
+          compteur = 0;
         }
 
-        int size = 0;
-        for (int i = 0; i < compressedImage.size(); i++) {
-          size += compressedImage.get(i).length;
+        // QOI_OP_INDEX
+        byte hash = QOISpecification.hash(pixel);
+        byte[] reference = hashTable[hash];
+        if (ArrayUtils.equals(reference, pixel) && (!reference.equals(new byte[]{0, 0, 0, 0}) || hash != 0)) {
+          compressedImage.add(qoiOpIndex(hash));
+          previousPixel = ArrayUtils.copy(pixel);
+          continue;
+        }
+        hashTable[hash] = ArrayUtils.copy(pixel);
+        
+        // QOI_OP_RGBA
+        if (pixel[3] != previousPixel[3]) {
+          compressedImage.add(qoiOpRGBA(pixel));
+          previousPixel = ArrayUtils.copy(pixel);
+          continue;
         }
 
-        byte[] result = new byte[size];
-        int k = 0;
-        for (int i = 0; i < compressedImage.size(); i++) {
-          for (int j = 0; j < compressedImage.get(i).length; j++) {
-            result[k++] = compressedImage.get(i)[j];
-          }
+        // QOI_OP_DIFF
+        byte dr = (byte) (pixel[0] - previousPixel[0]);
+        byte dg = (byte) (pixel[1] - previousPixel[1]);
+        byte db = (byte) (pixel[2] - previousPixel[2]);
+
+        if (ArrayUtils.inRange(-3,2, dr)
+        &&  ArrayUtils.inRange(-3, 2, dg)
+        &&  ArrayUtils.inRange(-3, 2, db)) {
+          compressedImage.add(qoiOpDiff(new byte[]{dr, dg, db}));
+          previousPixel = ArrayUtils.copy(pixel);
+          continue;
         }
 
-        return result;
+        // QOI_OP_LUMA
+        byte drdg = (byte) (dr - dg);
+        byte dbdg = (byte) (db - dg);
+        if (ArrayUtils.inRange(-33,32, dg)
+        &&  ArrayUtils.inRange(-9, 8, drdg)
+        &&  ArrayUtils.inRange(-9, 8, dbdg)) {
+          compressedImage.add(qoiOpLuma(new byte[]{dr, dg, db}));
+          previousPixel = ArrayUtils.copy(pixel);
+          continue;
+        }
+        
+        // QOI_OP_RGB
+        compressedImage.add(qoiOpRGB(pixel));
+        previousPixel = ArrayUtils.copy(pixel);
+      }
+      if (compteur > 0) {
+        compressedImage.add(qoiOpRun(compteur));
+      }
 
+      int size = 0;
+      for (int i = 0; i < compressedImage.size(); i++) {
+        size += compressedImage.get(i).length;
+      }
+
+      byte[] result = new byte[size];
+      int k = 0;
+      for (int i = 0; i < compressedImage.size(); i++) {
+        for (int j = 0; j < compressedImage.get(i).length; j++) {
+          result[k++] = compressedImage.get(i)[j];
+        }
+      }
+
+      return result;
     }
 
     /**
@@ -253,7 +256,7 @@ public final class QOIEncoder {
      * @return (byte[]) - Binary representation of the "Quite Ok File" of the image
      * @throws AssertionError if the image is null
      */
-    public static byte[] qoiFile(Helper.Image image){
+    public static byte[] qoiFile(Helper.Image image) {
       assert image != null : "Image is null";
       byte[] header = qoiHeader(image);
 

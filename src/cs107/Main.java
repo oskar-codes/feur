@@ -74,11 +74,11 @@ public final class Main {
 
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
-        assert testDecodeQoiOpRGB();
-        // assert testDecodeQoiOpRGBA();
-        assert testDecodeQoiOpDiff();
-        assert testDecodeQoiOpLuma();
-        // assert testDecodeQoiOpRun();
+        // assert testDecodeQoiOpRGB();
+        assert testDecodeQoiOpRGBA();
+        // assert testDecodeQoiOpDiff();
+        // assert testDecodeQoiOpLuma();
+        assert testDecodeQoiOpRun();
         // assert testDecodeData();
 
         System.out.println("All the tests passes. Congratulations");

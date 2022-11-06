@@ -2,9 +2,6 @@ package src.cs107;
 
 import static src.cs107.Helper.Image;
 
-import java.lang.reflect.Array;
-import java.time.Period;
-
 /**
  * "Quite Ok Image" Decoder
  * @apiNote Third task of the 2022 Mini Project
@@ -66,15 +63,7 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.1
      */
     public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx){
-        assert buffer != null : "Invalid buffer size";
-        assert input != null : "Invalid input size";
-        assert position >= 0 && position < buffer.length : "Invalid position in buffers";
-        assert idx >= 0 && idx < input.length - 3 : "Invalid position in input";
-        for (int i = 0; i < 3; i++) {
-            buffer[position][i] = input[idx + i]; 
-        }
-        buffer[position][3] = alpha;
-        return 3;
+      return Helper.fail("Not Implemented");
     }
 
     /**
@@ -87,7 +76,14 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.2
      */
     public static int decodeQoiOpRGBA(byte[][] buffer, byte[] input, int position, int idx){
-        return Helper.fail("Not Implemented");
+      assert buffer != null : "Empty buffer";
+      assert input != null : "Empty input";
+      assert position >= 0 && position < buffer.length : "Invalid position";
+      assert idx >= 0 && idx < input.length - 4 : "Invalid index or input too short";
+
+      buffer[position] = ArrayUtils.extract(input, idx, 4);
+
+      return 4;
     }
 
     /**
@@ -98,16 +94,7 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.4
      */
     public static byte[] decodeQoiOpDiff(byte[] previousPixel, byte chunk){
-        assert previousPixel != null : "previousPixel is null";
-        assert previousPixel.length == 4 : "Invalid previousPixel length";
-        assert (chunk >> 6) << 6 == QOISpecification.QOI_OP_DIFF_TAG : "Invalid method";
-        byte dr = (byte) (((chunk & 0b00_11_00_00) >> 4) - 2);
-        byte dg = (byte) (((chunk & 0b00_00_11_00) >> 2) - 2);
-        byte db = (byte) ((chunk & 0b00_00_00_11) - 2);
-        previousPixel[0] += dr;
-        previousPixel[1] += dg;
-        previousPixel[2] += db;
-        return previousPixel;
+      return Helper.fail("Not Implemented");
     }
 
     /**
@@ -118,19 +105,7 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.5
      */
     public static byte[] decodeQoiOpLuma(byte[] previousPixel, byte[] data){
-        assert previousPixel != null : "previousPixel is null";
-        assert data != null : "data is null";
-        assert previousPixel.length == 4 : "Invalid previousPixel length";
-        assert (data[0] >> 6) << 6 == QOISpecification.QOI_OP_LUMA_TAG : "Invalid method";
-        byte dg = (byte) ((data[0] & 0b00_11_11_11) - 32) ;
-        byte dr =  (byte) (((data[1] & 0b11_11_00_00) >> 4) + dg - 8);
-        byte db =  (byte) ((data[1] & 0b00_00_11_11) + dg - 8);
-
-        previousPixel[0] += dr;
-        previousPixel[1] += dg; 
-        previousPixel[2] += db;
-
-        return previousPixel;
+      return Helper.fail("Not Implemented");
     }
 
     /**
@@ -143,7 +118,13 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.6
      */
     public static int decodeQoiOpRun(byte[][] buffer, byte[] pixel, byte chunk, int position){
-        return Helper.fail("Not Implemented");
+      int repetitions = (chunk & 0b00_11_11_11) + 1;
+      
+      for(int i = 0; i < repetitions; i++) {
+        buffer[position + i] = pixel;
+      }
+
+      return repetitions - 1;
     }
 
     // ==================================================================================
@@ -159,7 +140,52 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.3
      */
     public static byte[][] decodeData(byte[] data, int width, int height){
-        return Helper.fail("Not Implemented");
+      byte[] previousPixel = QOISpecification.START_PIXEL;
+      byte[][] buffer = new byte[width * height][4];
+      byte[][] hashTable = new byte[64][4];
+      int position = 0;
+
+      for (byte chunk : data) {
+        switch (chunk) {
+          case QOISpecification.QOI_OP_RGB_TAG:
+            position += decodeQoiOpRGB(buffer, data, (byte) 0xFF, position, 0);
+            break;
+          case QOISpecification.QOI_OP_RGBA_TAG:
+            position += decodeQoiOpRGBA(buffer, data, position, 0);
+            break;
+          case QOISpecification.QOI_OP_DIFF_TAG:
+            previousPixel = decodeQoiOpDiff(previousPixel, chunk);
+            buffer[position] = previousPixel;
+            position++;
+            break;
+          case QOISpecification.QOI_OP_LUMA_TAG:
+            previousPixel = decodeQoiOpLuma(previousPixel, ArrayUtils.extract(data, 0, 2));
+            buffer[position] = previousPixel;
+            position++;
+            break;
+          case QOISpecification.QOI_OP_RUN_TAG:
+            position += decodeQoiOpRun(buffer, previousPixel, chunk, position);
+            break;
+          default:
+            if (chunk >= 0 && chunk <= 63) {
+              buffer[position] = hashTable[chunk];
+              position++;
+            } else if (chunk >= 64 && chunk <= 127) {
+              byte[] pixel = hashTable[chunk - 64];
+              position += decodeQoiOpRun(buffer, pixel, chunk, position);
+            } else if (chunk >= -64 && chunk <= -1) {
+              byte[] pixel = hashTable[chunk + 64];
+              position += decodeQoiOpRun(buffer, pixel, chunk, position);
+            } else {
+              assert false : "Invalid chunk";
+            }
+        }
+      }
+
+
+
+
+      return buffer;
     }
 
     /**
@@ -169,7 +195,7 @@ public final class QOIDecoder {
      * @throws AssertionError if content is null
      */
     public static Image decodeQoiFile(byte[] content){
-        return Helper.fail("Not Implemented");
+      return Helper.fail("Not Implemented");
     }
 
 }
