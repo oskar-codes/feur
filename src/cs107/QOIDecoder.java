@@ -63,7 +63,15 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.1
      */
     public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx){
-      return Helper.fail("Not Implemented");
+      assert buffer != null : "Invalid buffer size";
+      assert input != null : "Invalid input size";
+      assert position >= 0 && position < buffer.length : "Invalid position in buffers";
+      assert idx >= 0 && idx < input.length - 3 : "Invalid position in input";
+      for (int i = 0; i < 3; i++) {
+          buffer[position][i] = input[idx + i]; 
+      }
+      buffer[position][3] = alpha;
+      return 3;
     }
 
     /**
@@ -94,7 +102,16 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.4
      */
     public static byte[] decodeQoiOpDiff(byte[] previousPixel, byte chunk){
-      return Helper.fail("Not Implemented");
+      assert previousPixel != null : "previousPixel is null";
+      assert previousPixel.length == 4 : "Invalid previousPixel length";
+      assert (chunk >> 6) << 6 == QOISpecification.QOI_OP_DIFF_TAG : "Invalid method";
+      byte dr = (byte) (((chunk & 0b00_11_00_00) >> 4) - 2);
+      byte dg = (byte) (((chunk & 0b00_00_11_00) >> 2) - 2);
+      byte db = (byte) ((chunk & 0b00_00_00_11) - 2);
+      previousPixel[0] += dr;
+      previousPixel[1] += dg;
+      previousPixel[2] += db;
+      return previousPixel;
     }
 
     /**
@@ -105,7 +122,19 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.5
      */
     public static byte[] decodeQoiOpLuma(byte[] previousPixel, byte[] data){
-      return Helper.fail("Not Implemented");
+      assert previousPixel != null : "previousPixel is null";
+      assert data != null : "data is null";
+      assert previousPixel.length == 4 : "Invalid previousPixel length";
+      assert (data[0] >> 6) << 6 == QOISpecification.QOI_OP_LUMA_TAG : "Invalid method";
+      byte dg = (byte) ((data[0] & 0b00_11_11_11) - 32) ;
+      byte dr =  (byte) (((data[1] & 0b11_11_00_00) >> 4) + dg - 8);
+      byte db =  (byte) ((data[1] & 0b00_00_11_11) + dg - 8);
+
+      previousPixel[0] += dr;
+      previousPixel[1] += dg; 
+      previousPixel[2] += db;
+
+      return previousPixel;
     }
 
     /**
