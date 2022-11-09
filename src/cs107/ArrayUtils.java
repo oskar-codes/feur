@@ -97,8 +97,13 @@ public final class ArrayUtils {
    *                        different from 4
    */
   public static int toInt(byte[] bytes) {
+    assert bytes != null : "Input is null";
     assert bytes.length == 4 : "Invalid length of byte array";
-    return (bytes[3] + (bytes[2] << 8) + (bytes[1] << 16) + (bytes[0] << 24));
+
+    return (bytes[0] & 0xFF) << 24 | (bytes[1] & 0xFF) << 16
+        | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
+    // why the & 0xFF? because java uses signed bytes, so we need to convert
+    // them to unsigned bytes
   }
 
   /**
@@ -303,10 +308,11 @@ public final class ArrayUtils {
           input[index][1],
           input[index][2]
         };
+        // System.out.println(Arrays.toString(pixel));
         line[x] = toInt(pixel);
         index++;
       }
-      output[y] = line;
+      output[y] = copy(line);
     }
 
     return output;
@@ -409,17 +415,32 @@ public final class ArrayUtils {
   }
 
   /**
-   * Returns a copy of the given array of length 4
+   * Returns a copy of the given array
    * @param input (byte[]) - Array to copy
    * @return (byte[]) - Copy of the array
-   * @throws AssertionError if the input is null or the input's length is different from 4
+   * @throws AssertionError if the input is null
    */
   public static byte[] copy(byte[] input) {
     assert input != null : "Input is null";
-    assert input.length == 4 : "Input's length is different from 4";
 
-    byte[] output = new byte[4];
-    for (int i = 0; i < 4; i++) {
+    byte[] output = new byte[input.length];
+    for (int i = 0; i < input.length; i++) {
+      output[i] = input[i];
+    }
+    return output;
+  }
+
+  /**
+   * Returns a copy of the given array
+   * @param input (int[]) - Array to copy
+   * @return (int[]) - Copy of the array
+   * @throws AssertionError if the input is null
+   */
+  public static int[] copy(int[] input) {
+    assert input != null : "Input is null";
+
+    int[] output = new int[input.length];
+    for (int i = 0; i < input.length; i++) {
       output[i] = input[i];
     }
     return output;

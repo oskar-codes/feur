@@ -2,6 +2,8 @@ package src.cs107;
 
 import static src.cs107.Helper.Image;
 
+import java.util.Arrays;
+
 /**
  * "Quite Ok Image" Decoder
  * @apiNote Third task of the 2022 Mini Project
@@ -246,17 +248,15 @@ public final class QOIDecoder {
       int height = decodedHeader[1];
       byte channels = (byte)decodedHeader[2];
       byte colorSpace = (byte)decodedHeader[3];
-
+      
       int[][] decodedData = ArrayUtils.channelsToImage(
         decodeData(
           ArrayUtils.extract(content, 14, content.length - 14 - 8), 
           width, 
           height
-        ),
+        ),  
         height, width
       );
-
-      // System.out.println(ArrayUtils.toString(decodedData));
     
       return Helper.generateImage(decodedData, channels, colorSpace);
     

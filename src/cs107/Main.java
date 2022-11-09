@@ -69,9 +69,11 @@ public final class Main {
         //     Helper.readImage("D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".png")
         //   )
         // );
-
-        // Diff.diff("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi", "D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".qoi");
-
+        
+        // Helper.writeImage(name + ".png", QOIDecoder.decodeQoiFile(Helper.read("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi")));
+        
+        // Diff.diff("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".png", "D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".png");
+        
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
         assert testDecodeQoiOpRGB();
@@ -80,17 +82,7 @@ public final class Main {
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
         assert testDecodeData();
-
-        // byte[] data = new byte[]{-2, 0, 0, -77, -2, -1, -1, 0, 26, 45, 26, 45};
-        // System.out.println(ArrayUtils.toString(QOIDecoder.decodeData(data, 3, 2)));
-
-        // System.out.println(ArrayUtils.toString(ArrayUtils.imageToChannels(new int[][]{
-        //   {-16777293, -16843008, -16777293},
-        //   {-16843008, -16777293, -16843008}
-        // })));
-
-
-        // Helper.writeImage(name + ".png", QOIDecoder.decodeQoiFile(Helper.read("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi")));
+        
 
         System.out.println("All the tests passes. Congratulations");
     }
