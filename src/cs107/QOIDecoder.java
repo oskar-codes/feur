@@ -65,12 +65,14 @@ public final class QOIDecoder {
     public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx){
       assert buffer != null : "Invalid buffer size";
       assert input != null : "Invalid input size";
-      assert position >= 0 && position < buffer.length : "Invalid position in buffers";
-      assert idx >= 0 && idx < input.length - 3 : "Invalid position in input";
-      for (int i = 0; i < 3; i++) {
-          buffer[position][i] = input[idx + i]; 
-      }
+      assert position >= 0 && position < buffer.length : "Invalid position in buffer";
+      assert idx >= 0 && idx < input.length - 2 : "Invalid position in input";
+      
+      buffer[position][0] = input[idx];
+      buffer[position][1] = input[idx + 1];
+      buffer[position][2] = input[idx + 2];
       buffer[position][3] = alpha;
+      
       return 3;
     }
 
@@ -86,8 +88,9 @@ public final class QOIDecoder {
     public static int decodeQoiOpRGBA(byte[][] buffer, byte[] input, int position, int idx){
       assert buffer != null : "Empty buffer";
       assert input != null : "Empty input";
-      assert position >= 0 && position < buffer.length : "Invalid position";
-      assert idx >= 0 && idx < input.length - 4 : "Invalid index or input too short";
+      assert position >= 0 : "Invalid negative position";
+      assert position < buffer.length : "Position too big";
+      assert idx >= 0 && idx < input.length - 3 : "Invalid index or input too short";
 
       buffer[position] = ArrayUtils.extract(input, idx, 4);
 
@@ -169,50 +172,62 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.3
      */
     public static byte[][] decodeData(byte[] data, int width, int height){
-      byte[] previousPixel = QOISpecification.START_PIXEL;
       byte[][] buffer = new byte[width * height][4];
+      byte[] previousPixel = QOISpecification.START_PIXEL;
       byte[][] hashTable = new byte[64][4];
       int position = 0;
 
-      for (byte chunk : data) {
-        switch (chunk) {
-          case QOISpecification.QOI_OP_RGB_TAG:
-            position += decodeQoiOpRGB(buffer, data, (byte) 0xFF, position, 0);
-            break;
-          case QOISpecification.QOI_OP_RGBA_TAG:
-            position += decodeQoiOpRGBA(buffer, data, position, 0);
-            break;
-          case QOISpecification.QOI_OP_DIFF_TAG:
-            previousPixel = decodeQoiOpDiff(previousPixel, chunk);
-            buffer[position] = previousPixel;
-            position++;
-            break;
-          case QOISpecification.QOI_OP_LUMA_TAG:
-            previousPixel = decodeQoiOpLuma(previousPixel, ArrayUtils.extract(data, 0, 2));
-            buffer[position] = previousPixel;
-            position++;
-            break;
-          case QOISpecification.QOI_OP_RUN_TAG:
-            position += decodeQoiOpRun(buffer, previousPixel, chunk, position);
-            break;
-          default:
-            if (chunk >= 0 && chunk <= 63) {
-              buffer[position] = hashTable[chunk];
-              position++;
-            } else if (chunk >= 64 && chunk <= 127) {
-              byte[] pixel = hashTable[chunk - 64];
-              position += decodeQoiOpRun(buffer, pixel, chunk, position);
-            } else if (chunk >= -64 && chunk <= -1) {
-              byte[] pixel = hashTable[chunk + 64];
-              position += decodeQoiOpRun(buffer, pixel, chunk, position);
-            } else {
-              assert false : "Invalid chunk";
-            }
+      for (int index = 0; index < data.length; index++) {
+        byte chunk = data[index];
+        
+        if (chunk == QOISpecification.QOI_OP_RGBA_TAG) {
+          index += decodeQoiOpRGBA(buffer, data, position, index + 1);
+          hashTable[QOISpecification.hash(buffer[position])] = buffer[position];
+          position++;
+          continue;
+        }
+
+        if (chunk == QOISpecification.QOI_OP_RGB_TAG) {
+          index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index + 1);
+          hashTable[QOISpecification.hash(buffer[position])] = buffer[position];
+          previousPixel = ArrayUtils.copy(buffer[position]);
+          position++;
+          continue;
+        }
+
+        byte tag = (byte) (chunk & 0b11_00_00_00);
+        if (tag == QOISpecification.QOI_OP_DIFF_TAG) {
+          buffer[position] = decodeQoiOpDiff(previousPixel, chunk);
+          hashTable[QOISpecification.hash(buffer[position])] = buffer[position];
+          previousPixel = ArrayUtils.copy(buffer[position]);
+          position++;
+          continue;
+        }
+
+        if (tag == QOISpecification.QOI_OP_LUMA_TAG) {
+          buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.extract(data, index, 2));
+          hashTable[QOISpecification.hash(buffer[position])] = buffer[position];
+          previousPixel = ArrayUtils.copy(buffer[position]);
+          position++;
+          index++;
+          continue;
+        }
+
+        if (tag == QOISpecification.QOI_OP_RUN_TAG) {
+          int increment = decodeQoiOpRun(buffer, previousPixel, chunk, position);
+          previousPixel = ArrayUtils.copy(buffer[position]);
+          position += increment + 1;
+          continue;
+        }
+
+        if (tag == QOISpecification.QOI_OP_INDEX_TAG) {
+          int hash = (chunk & 0b00_11_11_11);
+          buffer[position] = hashTable[hash];
+          previousPixel = ArrayUtils.copy(buffer[position]);
+          position++;
+          continue;
         }
       }
-
-
-
 
       return buffer;
     }
@@ -223,8 +238,28 @@ public final class QOIDecoder {
      * @return (Image) - Decoded image
      * @throws AssertionError if content is null
      */
-    public static Image decodeQoiFile(byte[] content){
-      return Helper.fail("Not Implemented");
+    public static Image decodeQoiFile(byte[] content) {
+      assert content != null : "content is null";
+      
+      int[] decodedHeader = decodeHeader(ArrayUtils.extract(content, 0, 14));
+      int width = decodedHeader[0];
+      int height = decodedHeader[1];
+      byte channels = (byte)decodedHeader[2];
+      byte colorSpace = (byte)decodedHeader[3];
+
+      int[][] decodedData = ArrayUtils.channelsToImage(
+        decodeData(
+          ArrayUtils.extract(content, 14, content.length - 14 - 8), 
+          width, 
+          height
+        ),
+        height, width
+      );
+
+      // System.out.println(ArrayUtils.toString(decodedData));
+    
+      return Helper.generateImage(decodedData, channels, colorSpace);
+    
     }
 
 }

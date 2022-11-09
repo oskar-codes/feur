@@ -1,5 +1,5 @@
 package src.cs107;
-
+import java.util.Arrays;
 /**
  * Utility class to manipulate arrays.
  * 
@@ -254,6 +254,7 @@ public final class ArrayUtils {
 
     int i = 0;
     for (int[] line : input) {
+      assert line != null : "One of the inner arrays is null";
       for (int pixel : line) {
         byte[] tab = fromInt(pixel);
         output[i++] = new byte[]{
@@ -284,19 +285,45 @@ public final class ArrayUtils {
    *                        or width is invalid
    */
   public static int[][] channelsToImage(byte[][] input, int height, int width) {
-    int[][] image = new int[height][width];
-    byte[] outputTemp = new byte[4];
-    int i = 0;
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        outputTemp[0] = input[i][3]; 
-        outputTemp[1] = input[i][0]; 
-        outputTemp[2] = input[i][1]; 
-        outputTemp[3] = input[i++][2]; 
-        image[y][x] = ArrayUtils.toInt(outputTemp);
-      }
+    assert input != null : "Input is null";
+    assert height > 0 && width > 0 : "Invalid height or width";
+    assert input.length == height * width : "Input's length differs from width * height";
+    for (byte[] tab : input) {
+      assert tab != null : "One of the inner arrays is null";
     }
-    return image;
+
+    int[][] output = new int[height][width];
+    int index = 0;
+    for (int y = 0; y < height; y++) {
+      int[] line = new int[width];
+      for (int x = 0; x < width; x++) {
+        byte[] pixel = new byte[]{
+          input[index][3],
+          input[index][0],
+          input[index][1],
+          input[index][2]
+        };
+        line[x] = toInt(pixel);
+        index++;
+      }
+      output[y] = line;
+    }
+
+    return output;
+
+    // int[][] image = new int[height][width];
+    // byte[] outputTemp = new byte[4];
+    // int i = 0;
+    // for (int y = 0; y < height; y++) {
+    //   for (int x = 0; x < width; x++) {
+    //     outputTemp[0] = input[i][3];
+    //     outputTemp[1] = input[i][0];
+    //     outputTemp[2] = input[i][1];
+    //     outputTemp[3] = input[i++][2];
+    //     image[y][x] = ArrayUtils.toInt(outputTemp);
+    //   }
+    // }
+    // return image;
   }
 
   /**
@@ -342,6 +369,23 @@ public final class ArrayUtils {
 
     String output = "";
     for (int[] tab : input) {
+      output += toString(tab) + "\n";
+    }
+
+    return output;
+  }
+
+  /**
+   * Recursively return a string representation of the input array
+   * @param input (byte[][]) - Array to represent
+   * @return (String) - String representation of the array
+   * @throws AssertionError if the input is null
+   */
+  public static String toString(byte[][] input) {
+    assert input != null : "Input is null";
+
+    String output = "";
+    for (byte[] tab : input) {
       output += toString(tab) + "\n";
     }
 

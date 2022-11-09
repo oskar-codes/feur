@@ -262,7 +262,11 @@ public final class QOIEncoder {
 
       byte[][] data = ArrayUtils.imageToChannels(image.data());
 
+
       byte[] encodedData = encodeData(data);
+
+      // System.out.println(ArrayUtils.toString(encodedData));
+
       byte[] EOF = QOISpecification.QOI_EOF;
       return ArrayUtils.concat(header, encodedData, EOF);
     }

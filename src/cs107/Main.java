@@ -62,7 +62,7 @@ public final class Main {
         assert testQoiOpRun();
         assert testEncodeData();
 
-        // String name = "dice";
+        String name = "beach";
 
         // Helper.write(name + ".qoi",
         //   QOIEncoder.qoiFile(
@@ -74,12 +74,23 @@ public final class Main {
 
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
-        // assert testDecodeQoiOpRGB();
+        assert testDecodeQoiOpRGB();
         assert testDecodeQoiOpRGBA();
-        // assert testDecodeQoiOpDiff();
-        // assert testDecodeQoiOpLuma();
+        assert testDecodeQoiOpDiff();
+        assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
-        // assert testDecodeData();
+        assert testDecodeData();
+
+        // byte[] data = new byte[]{-2, 0, 0, -77, -2, -1, -1, 0, 26, 45, 26, 45};
+        // System.out.println(ArrayUtils.toString(QOIDecoder.decodeData(data, 3, 2)));
+
+        // System.out.println(ArrayUtils.toString(ArrayUtils.imageToChannels(new int[][]{
+        //   {-16777293, -16843008, -16777293},
+        //   {-16843008, -16777293, -16843008}
+        // })));
+
+
+        // Helper.writeImage(name + ".png", QOIDecoder.decodeQoiFile(Helper.read("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi")));
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -387,7 +398,10 @@ public final class Main {
     private static boolean testDecodeData(){
         byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[][] expected = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
-        return Arrays.deepEquals(expected, QOIDecoder.decodeData(encoding, 4, 2));
+        
+        byte[][] decoded = QOIDecoder.decodeData(encoding, 4, 2);
+        
+        return Arrays.deepEquals(expected, decoded);
     }
 
 }
