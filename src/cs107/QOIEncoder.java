@@ -186,7 +186,7 @@ public final class QOIEncoder {
         // QOI_OP_INDEX
         byte hash = QOISpecification.hash(pixel);
         byte[] reference = hashTable[hash];
-        if (ArrayUtils.equals(reference, pixel) && (!reference.equals(new byte[]{0, 0, 0, 0}) || hash != 0)) {
+        if (ArrayUtils.equals(reference, pixel)) {
           compressedImage.add(qoiOpIndex(hash));
           previousPixel = ArrayUtils.copy(pixel);
           continue;
@@ -262,10 +262,7 @@ public final class QOIEncoder {
 
       byte[][] data = ArrayUtils.imageToChannels(image.data());
 
-
       byte[] encodedData = encodeData(data);
-
-      // System.out.println(ArrayUtils.toString(encodedData));
 
       byte[] EOF = QOISpecification.QOI_EOF;
       return ArrayUtils.concat(header, encodedData, EOF);

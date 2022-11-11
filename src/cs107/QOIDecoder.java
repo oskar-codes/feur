@@ -2,8 +2,6 @@ package src.cs107;
 
 import static src.cs107.Helper.Image;
 
-import java.util.Arrays;
-
 /**
  * "Quite Ok Image" Decoder
  * @apiNote Third task of the 2022 Mini Project
@@ -173,7 +171,7 @@ public final class QOIDecoder {
      * @return (byte[][]) - Decoded "Quite Ok Image"
      * @throws AssertionError See handouts section 6.3
      */
-    public static byte[][] decodeData(byte[] data, int width, int height){
+    public static byte[][] decodeData(byte[] data, int width, int height) {
       byte[][] buffer = new byte[width * height][4];
       byte[] previousPixel = QOISpecification.START_PIXEL;
       byte[][] hashTable = new byte[64][4];
@@ -185,6 +183,7 @@ public final class QOIDecoder {
         if (chunk == QOISpecification.QOI_OP_RGBA_TAG) {
           index += decodeQoiOpRGBA(buffer, data, position, index + 1);
           hashTable[QOISpecification.hash(buffer[position])] = buffer[position];
+          previousPixel = ArrayUtils.copy(buffer[position]);
           position++;
           continue;
         }

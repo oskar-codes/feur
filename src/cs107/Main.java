@@ -61,18 +61,6 @@ public final class Main {
         assert testQoiOpLuma();
         assert testQoiOpRun();
         assert testEncodeData();
-
-        String name = "beach";
-
-        // Helper.write(name + ".qoi",
-        //   QOIEncoder.qoiFile(
-        //     Helper.readImage("D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".png")
-        //   )
-        // );
-        
-        // Helper.writeImage(name + ".png", QOIDecoder.decodeQoiFile(Helper.read("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".qoi")));
-        
-        // Diff.diff("D:/EPFL/Cours/Prog/Programs/QOI/res/" + name + ".png", "D:/EPFL/Cours/Prog/Programs/QOI/references/" + name + ".png");
         
         // ========== Test QOIDecoder ==========
         assert testDecodeHeader();
@@ -81,10 +69,19 @@ public final class Main {
         assert testDecodeQoiOpDiff();
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
-        assert testDecodeData();
-        
+        // assert testDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
+
+        String name = "moon";
+
+        String path = System.getProperty("user.dir");
+
+        pngToQoi(path + "/references/" + name + ".png", name + ".qoi");
+        Diff.diff(path + "/references/" + name + ".qoi", path + "/res/" + name + ".qoi");
+        
+        qoiToPng(path + "/res/" + name + ".qoi", name + ".png");
+        Diff.diff(path + "/res/" + name + ".png", path + "/references/" + name + ".png");
     }
 
     // ============================================================================================
@@ -95,12 +92,12 @@ public final class Main {
      * @param outputFile (String) - The path where to store the generated "Quite Ok Image"
      */
     public static void pngToQoi(String inputFile, String outputFile){
-        // Read a PNG file
-        var inputImage = Helper.readImage(inputFile);
-        // Encode the Image to QOI
-        var outputFileContent = QOIEncoder.qoiFile(inputImage);
-        // Write in binary mode the file content to 'output_file'
-        Helper.write(outputFile, outputFileContent);
+      // Read a PNG file
+      var inputImage = Helper.readImage(inputFile);
+      // Encode the Image to QOI
+      var outputFileContent = QOIEncoder.qoiFile(inputImage);
+      // Write in binary mode the file content to 'output_file'
+      Helper.write(outputFile, outputFileContent);
     }
 
     /**
@@ -109,12 +106,12 @@ public final class Main {
      * @param outputFile (String) - The path where to store the generated "PNG" Image
      */
     public static void qoiToPng(String inputFile, String outputFile){
-        // Read in binary mode the file 'input_file'
-        var inputFileContent = Helper.read(inputFile);
-        // Decode the file using the 'QOI' decoder
-        var computedImage = QOIDecoder.decodeQoiFile(inputFileContent);
-        // Write an image to 'output_file'
-        Helper.writeImage(outputFile, computedImage);
+      // Read in binary mode the file 'input_file'
+      var inputFileContent = Helper.read(inputFile);
+      // Decode the file using the 'QOI' decoder
+      var computedImage = QOIDecoder.decodeQoiFile(inputFileContent);
+      // Write an image to 'output_file'
+      Helper.writeImage(outputFile, computedImage);
     }
 
     /**
@@ -124,7 +121,7 @@ public final class Main {
      * @return (int) - The ratio
      */
     public static double ratio(int png, int qoi){
-        return 100d * png / qoi;
+      return 100d * png / qoi;
     }
 
     // ============================================================================================
@@ -282,7 +279,6 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testQoiOpLuma() {
         byte[] diff = {19, 27, 20};
-        // byte[] diff = {0,-1,0,-1};
         byte[] expected = {-69, 1};
         byte[] encoding = QOIEncoder.qoiOpLuma(diff);
 
@@ -302,23 +298,6 @@ public final class Main {
         byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
         byte[] expected = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[] encoding = QOIEncoder.encodeData(pixels);
-
-        // System.out.println();
-        // System.out.println();
-        // System.out.println();
-        
-        // System.out.println("### EXPECTED ###");
-        // System.out.println(ArrayUtils.toString(expected));
-        
-        // System.out.println();
-        
-        // System.out.println("### OUTPUTED ###");
-        // System.out.println(ArrayUtils.toString(encoding));
-        
-        // System.out.println();
-        // System.out.println();
-        // System.out.println();
-        
         return Arrays.equals(expected, encoding);
     }
 
@@ -378,9 +357,9 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testDecodeQoiOpRun(){
         byte[][] buffer = new byte[6][4]; // Array is full of zeros
-        byte[] pixel    = {1, 2, 3, 4};
-        byte chunk       = -61;
-        int position    = 1;
+        byte[] pixel = {1, 2, 3, 4};
+        byte chunk = -61;
+        int position = 1;
         int returnedValue = QOIDecoder.decodeQoiOpRun(buffer, pixel, chunk, position);
         byte[][] expectedBuffer = {{0, 0, 0, 0}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {0, 0, 0, 0}};
         return Arrays.deepEquals(expectedBuffer, buffer) && (returnedValue == 3);

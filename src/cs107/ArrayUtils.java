@@ -100,10 +100,10 @@ public final class ArrayUtils {
     assert bytes != null : "Input is null";
     assert bytes.length == 4 : "Invalid length of byte array";
 
-    return (bytes[0] & 0xFF) << 24 | (bytes[1] & 0xFF) << 16
-        | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
-    // why the & 0xFF? because java uses signed bytes, so we need to convert
-    // them to unsigned bytes
+    return (bytes[0] & 0xFF) << 24 |
+           (bytes[1] & 0xFF) << 16 |
+           (bytes[2] & 0xFF) << 8  |
+           (bytes[3] & 0xFF);
   }
 
   /**
@@ -308,29 +308,18 @@ public final class ArrayUtils {
           input[index][1],
           input[index][2]
         };
-        // System.out.println(Arrays.toString(pixel));
         line[x] = toInt(pixel);
         index++;
       }
       output[y] = copy(line);
     }
-
     return output;
-
-    // int[][] image = new int[height][width];
-    // byte[] outputTemp = new byte[4];
-    // int i = 0;
-    // for (int y = 0; y < height; y++) {
-    //   for (int x = 0; x < width; x++) {
-    //     outputTemp[0] = input[i][3];
-    //     outputTemp[1] = input[i][0];
-    //     outputTemp[2] = input[i][1];
-    //     outputTemp[3] = input[i++][2];
-    //     image[y][x] = ArrayUtils.toInt(outputTemp);
-    //   }
-    // }
-    // return image;
   }
+
+  // ==================================================================================
+  // ============================== ADDITIONAL METHODS
+  // ==============================
+  // ==================================================================================
 
   /**
    * Return a string representation of the input array
@@ -377,7 +366,6 @@ public final class ArrayUtils {
     for (int[] tab : input) {
       output += toString(tab) + "\n";
     }
-
     return output;
   }
 
@@ -398,11 +386,6 @@ public final class ArrayUtils {
     return output;
   }
 
-  // ==================================================================================
-  // ============================== ADDITIONAL METHODS
-  // ==============================
-  // ==================================================================================
-  
   /**
    * Returns a boolean value indicating whether the given byte is between min and max (non-inclusive)
    * @param min (int) - Minimum value
