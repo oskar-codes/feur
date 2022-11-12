@@ -69,19 +69,19 @@ public final class Main {
         assert testDecodeQoiOpDiff();
         assert testDecodeQoiOpLuma();
         assert testDecodeQoiOpRun();
-        // assert testDecodeData();
+        assert testDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
 
-        String name = "moon";
+        // String name = "qoi_encode_test";
 
-        String path = System.getProperty("user.dir");
+        // String path = System.getProperty("user.dir");
 
-        pngToQoi(path + "/references/" + name + ".png", name + ".qoi");
-        Diff.diff(path + "/references/" + name + ".qoi", path + "/res/" + name + ".qoi");
+        // pngToQoi(path + "/references/" + name + ".png", name + ".qoi");
+        // Diff.diff(path + "/references/" + name + ".qoi", path + "/res/" + name + ".qoi");
         
-        qoiToPng(path + "/res/" + name + ".qoi", name + ".png");
-        Diff.diff(path + "/res/" + name + ".png", path + "/references/" + name + ".png");
+        // qoiToPng(path + "/res/" + name + ".qoi", name + ".png");
+        // Diff.diff(path + "/res/" + name + ".png", path + "/references/" + name + ".png");
     }
 
     // ============================================================================================
