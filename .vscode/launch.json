@@ -15,7 +15,7 @@
       "type": "java",
       "name": "Launch Main",
       "request": "launch",
-      "mainClass": "src.cs107.Main",
+      "mainClass": "cs107.Main",
       "projectName": "QOI_e0bc8f16",
       "vmArgs": "-enableassertions"
     }
