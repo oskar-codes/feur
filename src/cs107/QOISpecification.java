@@ -1,4 +1,4 @@
-package src.cs107;
+package cs107;
 
 /**
  * Utility class to describe the "Quite Ok Image" Specification

@@ -1,4 +1,4 @@
-package src.cs107;
+package cs107;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

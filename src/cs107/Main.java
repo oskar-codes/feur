@@ -1,4 +1,4 @@
-package src.cs107;
+package cs107;
 
 import java.util.Arrays;
 
@@ -73,15 +73,15 @@ public final class Main {
 
         System.out.println("All the tests passes. Congratulations");
 
-        // String name = "qoi_encode_test";
+        // String name = "dice";
 
         // String path = System.getProperty("user.dir");
 
-        // pngToQoi(path + "/references/" + name + ".png", name + ".qoi");
-        // Diff.diff(path + "/references/" + name + ".qoi", path + "/res/" + name + ".qoi");
+        // pngToQoi(path + "/references/qoi_test_images/" + name + ".png", name + ".qoi");
+        // Diff.diff(path + "/references/qoi_test_images/" + name + ".qoi", path + "/res/" + name + ".qoi");
         
         // qoiToPng(path + "/res/" + name + ".qoi", name + ".png");
-        // Diff.diff(path + "/res/" + name + ".png", path + "/references/" + name + ".png");
+        // Diff.diff(path + "/res/" + name + ".png", path + "/references/qoi_test_images/" + name + ".png");
     }
 
     // ============================================================================================

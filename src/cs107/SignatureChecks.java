@@ -1,4 +1,4 @@
-package src.cs107;
+package cs107;
 
 /**
  * Signatures of all the methods to be implemented by the students

@@ -1,6 +1,6 @@
-package src.cs107;
+package cs107;
 
-import static src.cs107.Helper.Image;
+import static cs107.Helper.Image;
 
 /**
  * "Quite Ok Image" Decoder

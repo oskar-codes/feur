@@ -1,4 +1,4 @@
-package src.cs107;
+package cs107;
 
 import java.util.Arrays;
 

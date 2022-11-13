@@ -1,4 +1,4 @@
-package src.cs107;
+package cs107;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
